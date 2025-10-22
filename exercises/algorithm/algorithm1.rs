@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -23,19 +22,19 @@ impl<T> Node<T> {
     }
 }
 #[derive(Debug)]
-struct LinkedList<T> {
+struct LinkedList<T: PartialOrd + Clone> {
     length: u32,
     start: Option<NonNull<Node<T>>>,
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T: PartialOrd + Clone> Default for LinkedList<T> {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T: PartialOrd + Clone> LinkedList<T> {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -71,16 +70,40 @@ impl<T> LinkedList<T> {
     }
 	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
 	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+        let mut list_c = LinkedList::new();
+
+    let mut a = list_a.start;
+    let mut b = list_b.start;
+
+    while a.is_some() && b.is_some() {
+        let a_val = unsafe { &(*a.unwrap().as_ptr()).val.clone() };
+        let b_val = unsafe { &(*b.unwrap().as_ptr()).val.clone() };
+
+        if a_val <= b_val {
+            list_c.add(unsafe { (*a.unwrap().as_ptr()).val.clone() });
+            a = unsafe { (*a.unwrap().as_ptr()).next };
+        } else {
+            list_c.add(unsafe { (*b.unwrap().as_ptr()).val.clone() });
+            b = unsafe { (*b.unwrap().as_ptr()).next };
         }
+    }
+
+    // 处理剩余部分
+    while a.is_some() {
+        list_c.add(unsafe { (*a.unwrap().as_ptr()).val.clone() });
+        a = unsafe { (*a.unwrap().as_ptr()).next };
+    }
+
+    while b.is_some() {
+        list_c.add(unsafe { (*b.unwrap().as_ptr()).val.clone() });
+        b = unsafe { (*b.unwrap().as_ptr()).next };
+    }
+
+    list_c
 	}
 }
 
-impl<T> Display for LinkedList<T>
+impl<T: PartialOrd + Clone> Display for LinkedList<T>
 where
     T: Display,
 {

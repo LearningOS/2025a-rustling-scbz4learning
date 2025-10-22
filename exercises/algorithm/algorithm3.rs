@@ -3,11 +3,36 @@
 	This problem requires you to implement a sorting algorithm
 	you can use bubble sorting, insertion sorting, heap sorting, etc.
 */
-// I AM NOT DONE
+fn sort_helper<T: PartialOrd + Clone>(arr: &mut [T], start: usize, end: usize) {
+    if start + 1 >= end {
+        return;
+    }
+    let pivot = arr[start].clone();
+    let mut left = start + 1;
+    let mut right = end - 1;
+    
+    while left <= right {
+        while left <= right && arr[left] <= pivot {
+            left += 1;
+        }
+        while left <= right && arr[right] > pivot {
+            right -= 1;
+        }
+        if left < right {
+            arr.swap(left, right);
+        }
+    }
 
-fn sort<T>(array: &mut [T]){
-	//TODO
+    arr.swap(start, right);
+
+    sort_helper(arr, start, right);
+    sort_helper(arr, right + 1, end);
 }
+
+fn sort<T: PartialOrd + Clone>(arr: &mut [T]){
+    sort_helper(arr, 0, arr.len());
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
